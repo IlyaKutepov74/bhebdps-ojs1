@@ -14,7 +14,7 @@ describe("About Asserts (about_asserts.js)", function() {
 
   // Некоторые способы утверждения равенства лучше других.
   it('should assert equality a better way', function() {
-    let expectedValue = 2;
+    let expectedValue = "2";
     let actualValue = 1 + 1;
 
   // toEqual() сравнивает, используя равенство эквивалетности.
