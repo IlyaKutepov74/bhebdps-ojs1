@@ -6,7 +6,7 @@ describe("About Asserts (about_asserts.js)", function() {
 
   // Чтобы понять результат теста, мы должны сравнить ожидаемое значение с реальным.
   it('should expect equality', function() {
-    let expectedValue = true;
+    let expectedValue = 2;
     let actualValue = 1 + 1;
 
     expect(actualValue === expectedValue).toBeTruthy();
@@ -14,7 +14,7 @@ describe("About Asserts (about_asserts.js)", function() {
 
   // Некоторые способы утверждения равенства лучше других.
   it('should assert equality a better way', function() {
-    let expectedValue = true;
+    let expectedValue = 2;
     let actualValue = 1 + 1;
 
   // toEqual() сравнивает, используя равенство эквивалетности.
@@ -23,7 +23,7 @@ describe("About Asserts (about_asserts.js)", function() {
 
   // Иногда нужно быть точным в том, что вы "печатаете".
   it('should assert equality with ===', function() {
-    let expectedValue = true;
+    let expectedValue = 2;
     let actualValue = (1 + 1).toString();
 
   // toBe() всегда использует строе равенство (===).
