@@ -1,6 +1,7 @@
 (function() {
   'use strict';
 
+  // Стили
   var style = document.createElement('style');
   style.textContent =
     '* { box-sizing: border-box; }' +
@@ -16,6 +17,7 @@
     '.dot.active { background: #333; }';
   document.head.appendChild(style);
 
+  // Создаём структуру слайдера 
   var slider = document.createElement('div');
   slider.className = 'slider';
 
@@ -56,6 +58,7 @@
   slider.appendChild(dotsContainer);
   document.body.appendChild(slider);
 
+  // Логика слайдера 
   var slideCount = images.length;
   var currentIndex = 0;
 
