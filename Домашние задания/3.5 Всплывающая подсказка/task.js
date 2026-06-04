@@ -1,54 +1,74 @@
-(function() {
-  'use strict';
+const tooltips = Array.from(document.querySelectorAll('.has-tooltip'));
+let activeTooltip = null;
+let currentTooltipElement = null;
 
-  // Стили 
-  var style = document.createElement('style');
-  style.textContent =
-    '.tooltip-wrapper { position: relative; display: inline-block; margin: 60px; font-family: Arial, sans-serif; }' +
-    '.tooltip-trigger { cursor: pointer; border-bottom: 1px dashed #333; padding: 4px 2px; color: #0059b3; }' +
-    '.tooltip { position: absolute; bottom: calc(100% + 10px); left: 50%; transform: translateX(-50%); background: #333; color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 14px; white-space: nowrap; opacity: 0; visibility: hidden; transition: opacity 0.25s, visibility 0.25s; pointer-events: none; }' +
-    '.tooltip::after { content: ""; position: absolute; top: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-top-color: #333; }' +
-    '.tooltip-wrapper:hover .tooltip { opacity: 1; visibility: visible; }' +
-    '.tooltip-wrapper.right-edge .tooltip { left: auto; right: 0; transform: translateX(0); }' +
-    '.tooltip-wrapper.right-edge .tooltip::after { left: auto; right: 20px; }';
-  document.head.appendChild(style);
+// Создаём один элемент подсказки и переиспользуем его
+const tooltipElem = document.createElement('div');
+tooltipElem.classList.add('tooltip');
+document.body.appendChild(tooltipElem);
 
-  // Контейнер для центрирования 
-  var wrapper = document.createElement('div');
-  wrapper.style.display = 'flex';
-  wrapper.style.justifyContent = 'center';
-  wrapper.style.alignItems = 'center';
-  wrapper.style.height = '100vh';
+function showTooltip(element) {
+  const text = element.getAttribute('title');
+  if (!text) return;
 
-  // Сам компонент подсказки 
-  var tooltipWrapper = document.createElement('div');
-  tooltipWrapper.className = 'tooltip-wrapper';
-  tooltipWrapper.id = 'tooltipDemo';
+  // Предотвращаем показ стандартного title
+  element.removeAttribute('title');
+  element.dataset.tooltipText = text;
 
-  var trigger = document.createElement('span');
-  trigger.className = 'tooltip-trigger';
-  trigger.textContent = 'Наведи на меня';
+  tooltipElem.textContent = text;
+  tooltipElem.classList.add('tooltip_active');
 
-  var tooltip = document.createElement('div');
-  tooltip.className = 'tooltip';
-  tooltip.textContent = 'Это всплывающая подсказка';
+  const rect = element.getBoundingClientRect();
+  let left = rect.left + rect.width / 2 - tooltipElem.offsetWidth / 2;
+  let top = rect.top - tooltipElem.offsetHeight - 5;
 
-  tooltipWrapper.appendChild(trigger);
-  tooltipWrapper.appendChild(tooltip);
-  wrapper.appendChild(tooltipWrapper);
-  document.body.appendChild(wrapper);
-
-  // Адаптация позиции при нехватке места 
-  function checkEdge() {
-    var rect = tooltipWrapper.getBoundingClientRect();
-    var tooltipWidth = 180; 
-    if (rect.left + tooltipWidth > window.innerWidth) {
-      tooltipWrapper.classList.add('right-edge');
-    } else {
-      tooltipWrapper.classList.remove('right-edge');
-    }
+  // Проверка границ
+  if (left < 0) left = 0;
+  if (left + tooltipElem.offsetWidth > window.innerWidth) {
+    left = window.innerWidth - tooltipElem.offsetWidth;
+  }
+  if (top < 0) {
+    top = rect.bottom + 5;
   }
 
-  window.addEventListener('resize', checkEdge);
-  checkEdge();
-})();
+  tooltipElem.style.left = left + 'px';
+  tooltipElem.style.top = top + 'px';
+
+  activeTooltip = element;
+}
+
+function hideTooltip() {
+  if (activeTooltip) {
+    // Возвращаем title обратно
+    activeTooltip.setAttribute('title', activeTooltip.dataset.tooltipText);
+    delete activeTooltip.dataset.tooltipText;
+    activeTooltip = null;
+  }
+  tooltipElem.classList.remove('tooltip_active');
+}
+
+tooltips.forEach(link => {
+  link.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (activeTooltip === link) {
+      hideTooltip();
+    } else {
+      if (activeTooltip) hideTooltip();
+      showTooltip(link);
+    }
+  });
+});
+
+// Скрываем подсказку при клике вне ссылок
+document.addEventListener('click', (e) => {
+  if (!e.target.classList.contains('has-tooltip')) {
+    hideTooltip();
+  }
+});
+
+// Корректируем позицию при ресайзе
+window.addEventListener('resize', () => {
+  if (activeTooltip) {
+    showTooltip(activeTooltip);
+  }
+});
