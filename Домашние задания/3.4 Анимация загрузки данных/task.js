@@ -1,52 +1,43 @@
-(function() {
-  'use strict';
+const loader = document.getElementById('loader');
+const itemsContainer = document.getElementById('items');
 
-  // Создаём контейнер
-  var container = document.createElement('div');
-  container.style.display = 'flex';
-  container.style.flexDirection = 'column';
-  container.style.alignItems = 'center';
-  container.style.justifyContent = 'center';
-  container.style.minHeight = '100vh';
-  container.style.backgroundColor = '#f0f0f0';
-  container.style.fontFamily = 'Arial, sans-serif';
+const currencies = [
+  { code: 'USD', value: '74.21' },
+  { code: 'EUR', value: '89.57' },
+  { code: 'GBP', value: '102.44' },
+  { code: 'JPY', value: '0.67' }
+];
 
-  // Прогресс-бар
-  var progressBar = document.createElement('div');
-  progressBar.style.width = '300px';
-  progressBar.style.height = '20px';
-  progressBar.style.background = '#ddd';
-  progressBar.style.borderRadius = '10px';
-  progressBar.style.overflow = 'hidden';
-  progressBar.style.marginBottom = '20px';
+setTimeout(() => {
+  // Скрываем загрузчик
+  loader.classList.remove('loader_active');
 
-  var progressFill = document.createElement('div');
-  progressFill.style.width = '0%';
-  progressFill.style.height = '100%';
-  progressFill.style.background = '#3498db';
-  progressFill.style.borderRadius = '10px';
-  progressFill.style.transition = 'width 0.3s ease';
-  progressBar.appendChild(progressFill);
+  // Удаляем пустой элемент-заглушку
+  const emptyItem = itemsContainer.querySelector('.item');
+  if (emptyItem) {
+    emptyItem.remove();
+  }
 
-  // Текст загрузки
-  var loaderText = document.createElement('p');
-  loaderText.style.fontSize = '18px';
-  loaderText.style.color = '#333';
-  loaderText.textContent = 'Загрузка данных... 0%';
+  // Создаём элементы с курсами валют
+  currencies.forEach(currency => {
+    const item = document.createElement('div');
+    item.classList.add('item');
 
-  container.appendChild(progressBar);
-  container.appendChild(loaderText);
-  document.body.appendChild(container);
+    const codeEl = document.createElement('div');
+    codeEl.classList.add('item__code');
+    codeEl.textContent = currency.code;
 
-  // Логика анимации
-  var progress = 0;
-  var interval = setInterval(function() {
-    progress += 1;
-    progressFill.style.width = progress + '%';
-    loaderText.textContent = 'Загрузка данных... ' + progress + '%';
-    if (progress >= 100) {
-      clearInterval(interval);
-      loaderText.textContent = 'Данные загружены!';
-    }
-  }, 40);
-})();
+    const valueEl = document.createElement('div');
+    valueEl.classList.add('item__value');
+    valueEl.textContent = currency.value;
+
+    const currencyEl = document.createElement('div');
+    currencyEl.classList.add('item__currency');
+    currencyEl.textContent = 'руб.';
+
+    item.appendChild(codeEl);
+    item.appendChild(valueEl);
+    item.appendChild(currencyEl);
+    itemsContainer.appendChild(item);
+  });
+}, 3000);
